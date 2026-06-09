@@ -47,7 +47,7 @@ export default function PolaroidHeartCollage() {
         {/* SECTION 1: Polaroid Photo Wall - 3 Photos */}
         <div className="mb-12">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-pink-600">✨ Our Polaroid Memories ✨</h2>
+            <h2 className="text-2xl font-semibold text-pink-600">✨ Most beautyfull ✨</h2>
             <div className="flex justify-center gap-1 mt-2">
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
@@ -97,7 +97,7 @@ export default function PolaroidHeartCollage() {
         {/* SECTION 3: Heart Shape Photo Collage - 3 Images */}
         <div className="my-16">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-pink-600">❤️ Heart Shaped Memories ❤️</h2>
+            <h2 className="text-2xl font-semibold text-pink-600">❤️ always on my heart ❤️</h2>
             <div className="flex justify-center gap-1 mt-2">
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
@@ -136,7 +136,7 @@ export default function PolaroidHeartCollage() {
         {/* SECTION 4: Polaroid Photo Wall - 2 Photos */}
         <div className="mt-12">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-pink-600">💕 Forever in Our Hearts 💕</h2>
+            <h2 className="text-2xl font-semibold text-pink-600">💕 Favourite 💕</h2>
             <div className="flex justify-center gap-1 mt-2">
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
               <Heart className="text-pink-400" size={14} fill="#f472b6" />
@@ -170,7 +170,7 @@ export default function PolaroidHeartCollage() {
             <Heart className="text-pink-400" size={24} fill="#f472b6" />
             <Heart className="text-pink-400" size={20} fill="#f472b6" />
           </div>
-          <p className="text-pink-400 text-sm mt-3">Every picture tells our love story</p>
+          <p className="text-pink-400 text-sm mt-3">Every picture tells your beauty </p>
         </div>
       </div>
     </div>

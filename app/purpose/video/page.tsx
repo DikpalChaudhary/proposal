@@ -2,12 +2,40 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Play, Pause, SkipBack, SkipForward, 
   Volume2, VolumeX, Music, Headphones 
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface HeartProps {
+  id: number;
+  size: number;
+  x: number;
+  duration: number;
+  delay: number;
+}
+
+const playlist = [
+{
+    id: 1,
+    title: "Mai Koi Geet Gau",
+    artist: "Nepali Romantic",
+    url: "/audio/Main_Koi_Aisa_Geet_Gaoon_-_HD_VIDEO___Shah_Rukh_Khan___Juhi_Chawla___Yes_Boss___90_s_Romantic_Songs(256k).mp3",
+    duration: "3:45",
+    emoji: "💖", // Blush heart / Crush vibes
+  },
+  {
+    id: 2,
+    title: "Sapna Ko Mayalu",
+    artist: "Nepali Love",
+    url: "/audio/Sapana_ko_mayalu_-_The_elements__Lyrics_(256k).mp3",
+    duration: "4:30",
+    emoji: "🙈", // Shy / Cute crush face for "Sapna Ko Mayalu"
+  },
+
+];
 
 export default function GiftSecondPage() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -16,86 +44,71 @@ export default function GiftSecondPage() {
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [floatingHearts, setFloatingHearts] = useState<Array<{ id: number; size: number; x: number; duration: number; delay: number }>>([]);
+  const [floatingHearts, setFloatingHearts] = useState<HeartProps[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
   const [audioError, setAudioError] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-
-  // Working online audio URLs (guaranteed to work)
-  const playlist = [
-    {
-      id: 1,
-      title: "Mai Koi Geet Gau",
-      artist: "Nepali Romantic",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      duration: "3:45",
-      emoji: "🎤",
-      lyrics: "म कोइ गीत गाउँ तिम्रो मुस्कानको लागि...\nतिम्रो हाँसो संगै मेरो दिल बाँच्छ\nतिमी बिना यो मन एक्लो छ\nम कोइ गीत गाउँ तिम्रो नामको..."
-    },
-    {
-      id: 2,
-      title: "Sapna Ko Mayalu",
-      artist: "Nepali Love",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-      duration: "4:30",
-      emoji: "💭",
-      lyrics: "सपनाको मायालु तिमी नै छौ\nमेरो मनको रानी तिमी नै छौ\nहरेक सपनामा तिमी आउँछौ\nमेरो दिलको धड्कन तिमी नै हौ..."
-    },
-    {
-      id: 3,
-      title: "Timro Mann Ma",
-      artist: "Nepali Romantic",
-      url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-      duration: "4:15",
-      emoji: "💕",
-      lyrics: "तिम्रो मनमा म बस्छु सधैंभरी\nतिम्रो माया मेरो जीवन हो\nतिमी बिना यो मन उदास छ\nतिमी नै मेरो सपनाको राजकुमारी..."
-    }
-  ];
-
   const [currentSongIndex, setCurrentSongIndex] = useState(0);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentSong = playlist[currentSongIndex];
 
+  // Handle client hydration safely
   useEffect(() => {
     setIsClient(true);
     const updateSize = () => {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
+    
     updateSize();
     window.addEventListener('resize', updateSize);
     
-    const newHearts = [];
-    for (let i = 0; i < 20; i++) {
-      newHearts.push({
-        id: i,
-        size: Math.random() * 30 + 15,
-        x: Math.random() * window.innerWidth,
-        duration: Math.random() * 8 + 4,
-        delay: Math.random() * 5
-      });
-    }
+    const newHearts = Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 30 + 15,
+      x: Math.random() * window.innerWidth,
+      duration: Math.random() * 8 + 4,
+      delay: Math.random() * 5
+    }));
     setFloatingHearts(newHearts);
     
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
+  // Track playlist change and sync HTML5 audio player seamlessly
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    audioRef.current.load();
+    setAudioError(false);
+    setCurrentTime(0);
+
+    if (isPlaying) {
+      setIsLoading(true);
+      audioRef.current.play()
+        .then(() => setIsLoading(false))
+        .catch((error) => {
+          console.error('Playback intercepted or failed:', error);
+          setIsPlaying(false);
+          setIsLoading(false);
+        });
+    }
+  }, [currentSongIndex]);
+
   const handlePlay = async () => {
-    if (audioRef.current && !audioError) {
-      try {
-        setIsLoading(true);
-        await audioRef.current.play();
-        setIsPlaying(true);
-        setAudioError(false);
-      } catch (error) {
-        console.log('Playback error:', error);
-        setAudioError(true);
-        setIsPlaying(false);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
+    if (!audioRef.current) return;
+    try {
+      setIsLoading(true);
+      setAudioError(false);
+      await audioRef.current.play();
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Playback error:', error);
       setAudioError(true);
+      setIsPlaying(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,32 +119,24 @@ export default function GiftSecondPage() {
     }
   };
 
-  const togglePlay = async () => {
+  const togglePlay = () => {
     if (isPlaying) {
       handlePause();
     } else {
-      await handlePlay();
+      handlePlay();
     }
   };
 
   const nextSong = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-      setShowLyrics(false);
-      setAudioError(false);
-      setCurrentSongIndex((prev) => (prev + 1) % playlist.length);
-    }
+    setAudioError(false);
+    setShowLyrics(false);
+    setCurrentSongIndex((prev) => (prev + 1) % playlist.length);
   };
 
   const prevSong = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-      setShowLyrics(false);
-      setAudioError(false);
-      setCurrentSongIndex((prev) => (prev - 1 + playlist.length) % playlist.length);
-    }
+    setAudioError(false);
+    setShowLyrics(false);
+    setCurrentSongIndex((prev) => (prev - 1 + playlist.length) % playlist.length);
   };
 
   const handleTimeUpdate = () => {
@@ -148,7 +153,6 @@ export default function GiftSecondPage() {
   };
 
   const handleAudioError = () => {
-    console.error('Audio loading error');
     setAudioError(true);
     setIsPlaying(false);
   };
@@ -165,46 +169,27 @@ export default function GiftSecondPage() {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     if (audioRef.current) {
-      audioRef.current.volume = newVolume;
+      audioRef.current.volume = isMuted ? 0 : newVolume;
     }
-    setIsMuted(false);
   };
 
   const toggleMute = () => {
-    if (audioRef.current) {
-      if (isMuted) {
-        audioRef.current.volume = volume;
-        setIsMuted(false);
-      } else {
-        audioRef.current.volume = 0;
-        setIsMuted(true);
-      }
-    }
+    if (!audioRef.current) return;
+    const nextMuteState = !isMuted;
+    setIsMuted(nextMuteState);
+    audioRef.current.volume = nextMuteState ? 0 : volume;
   };
 
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.load();
-      setAudioError(false);
-      // Auto-play after song change if was playing
-      if (isPlaying) {
-        setTimeout(() => handlePlay(), 100);
-      }
-    }
-  }, [currentSongIndex]);
-
-  if (!isClient) {
-    return null;
-  }
+  if (!isClient) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-red-900 relative overflow-hidden">
@@ -221,11 +206,11 @@ export default function GiftSecondPage() {
       </Link>
 
       {floatingHearts.length > 0 && (
-        <div className="fixed inset-0 pointer-events-none">
+        <div className="fixed inset-0 pointer-events-none z-0">
           {floatingHearts.map((heart) => (
             <motion.div
               key={heart.id}
-              initial={{ y: windowSize.height, x: heart.x, opacity: 0 }}
+              initial={{ y: windowSize.height || 800, x: heart.x, opacity: 0 }}
               animate={{ y: -100, opacity: [0, 0.3, 0] }}
               transition={{ 
                 duration: heart.duration, 
@@ -241,7 +226,7 @@ export default function GiftSecondPage() {
         </div>
       )}
 
-      <div className="relative min-h-screen flex items-center justify-center px-4 py-16">
+      <div className="relative min-h-screen flex items-center justify-center px-4 py-16 z-10">
         <div className="max-w-md w-full">
           
           <motion.div
@@ -256,7 +241,7 @@ export default function GiftSecondPage() {
               
               <div className="bg-gradient-to-r from-pink-500/30 to-purple-500/30 p-4 text-center">
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
+                  animate={isPlaying ? { scale: [1, 1.1, 1] } : {}}
                   transition={{ duration: 2, repeat: Infinity }}
                   className="inline-block"
                 >
@@ -289,7 +274,7 @@ export default function GiftSecondPage() {
                   
                   {audioError && (
                     <div className="mt-2 text-yellow-300 text-xs bg-black/30 rounded-lg p-2">
-                      ⚠️ Click play to start the music
+                      ⚠️ Could not load audio. Click play or try next track.
                     </div>
                   )}
                   
@@ -297,24 +282,26 @@ export default function GiftSecondPage() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowLyrics(!showLyrics)}
-                    className="mt-3 text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition"
+                    className="mt-3 text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition text-white"
                   >
                     {showLyrics ? "Hide Lyrics" : "Show Lyrics"} 📝
                   </motion.button>
                 </motion.div>
 
-                {showLyrics && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 p-3 bg-black/30 rounded-lg backdrop-blur-sm"
-                  >
-                    <p className="text-pink-200 text-xs italic whitespace-pre-line">
-                      {currentSong.lyrics}
-                    </p>
-                  </motion.div>
-                )}
+                <AnimatePresence>
+                  {showLyrics && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-4 p-3 bg-black/30 rounded-lg backdrop-blur-sm overflow-hidden"
+                    >
+                      <p className="text-pink-200 text-xs italic whitespace-pre-line leading-relaxed">
+                        {currentSong.lyrics}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <div className="px-5">
@@ -325,7 +312,7 @@ export default function GiftSecondPage() {
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                    className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-pink-500"
                     style={{
                       background: `linear-gradient(to right, #ec4899 ${progress}%, rgba(255,255,255,0.2) ${progress}%)`
                     }}
@@ -351,7 +338,7 @@ export default function GiftSecondPage() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={togglePlay}
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 shadow-lg"
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-full p-4 shadow-lg text-white disabled:opacity-50"
                   disabled={isLoading}
                 >
                   {isPlaying ? <Pause size={32} fill="white" /> : <Play size={32} fill="white" />}
@@ -382,7 +369,7 @@ export default function GiftSecondPage() {
                   step="0.01"
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="flex-1 h-1 bg-white/20 rounded-full appearance-none cursor-pointer"
+                  className="flex-1 h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-pink-500"
                   style={{
                     background: `linear-gradient(to right, #ec4899 ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.2) ${(isMuted ? 0 : volume) * 100}%)`
                   }}

@@ -15,20 +15,20 @@ export default function GiftThirdPage() {
 
   // Love letter content
   const loveLetter = {
-    title: "My Dearest Love 💌",
-    content: `From the moment I met you, my world changed in ways I never thought possible. 
-    Every day with you feels like a beautiful dream that I never want to wake up from.
-    
-    Your smile lights up my darkest days, your laughter is the sweetest melody, 
-    and your love has given me a purpose I never knew I needed.
-    
-    I promise to cherish every moment we share, to support you in all your dreams, 
-    and to love you with all my heart, today, tomorrow, and always.
-    
-    You are my greatest adventure, my safest home, and my forever love.
-    
-    With all my love,
-    Your Forever 💕`
+   title: "हाम्रो सानो संसार: एउटा मिठो कथा 📖✨",
+  content: `कुनै दिन मैले सोचेको पनि थिइनँ कि कोही अजनबी मेरो जिन्दगीको सबैभन्दा सुन्दर हिस्सा बनिदिनेछ। तर जब तिमी आयौ, तिमीसँगै मेरा हरेक साधारण दिनहरू उत्सव जस्ता बन्न थाले।
+
+  याद छ? सुरु-सुरुमा तिमीसँग कुरा गर्दा मेरो मुटु कसरी धड्किन्थ्यो! तिम्रो म्यासेज आउँदा ओठमा आउने त्यो साँचो मुस्कान, अनि राती ढिलोसम्म तिम्रा कुरा सुन्दै टोलाएका ती पलहरू... मेरा जिन्दगीका सबैभन्दा अमूल्य कमाइ हुन्। तिमी टाढा हुँदा पनि यो मनले तिम्रै सामीप्यता खोजिरहन्छ।
+
+  तिमी केवल मेरो माया मात्र होइनौ, तिमी त मेरो त्यो शान्त कुना हौ जहाँ म संसारका सबै तनाव बिर्सेर आनन्दले मुस्कुराउन सक्छु। तिम्रो काँध मेरो सबैभन्दा सुरक्षित छहारी हो, र तिम्रो साथ मेरो भाग्य।
+
+  संसार बदलिइरहोला, समय थामिएला वा बगिरहोला, तर तिम्रो लागि मेरो यो मन सधैं उस्तै रहनेछ। तिम्रो हात थामेर म जिन्दगीको हरेक उकाली-ओराली काट्न तयार छु। किनकि तिमी छौ र त यो जीवन सुन्दर छ।
+
+  मेरो सुखमा पनि तिमी, मेरो दुखमा पनि तिमी,
+  मेरो आज पनि तिमी, मेरो भोलि पनि तिमी।
+  
+  धेरै धेरै माया,
+  तिम्रो आफ्नो मान्छे 🌸`
   };
 
   // Promises array
