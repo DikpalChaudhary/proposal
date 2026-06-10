@@ -288,20 +288,7 @@ export default function GiftSecondPage() {
                   </motion.button>
                 </motion.div>
 
-                <AnimatePresence>
-                  {showLyrics && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-4 p-3 bg-black/30 rounded-lg backdrop-blur-sm overflow-hidden"
-                    >
-                      <p className="text-pink-200 text-xs italic whitespace-pre-line leading-relaxed">
-                        {currentSong.lyrics}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+             
               </div>
 
               <div className="px-5">
